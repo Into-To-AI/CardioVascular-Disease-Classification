@@ -31,9 +31,7 @@ class DecisionTree:
         feat_idxs = np.random.choice(n_feat, self.n_feats, replace=False)
 
         best_thresh, best_feat_idx = self._best_split(X, y, feat_idxs)
-
-    
-
+        
         left_idxs, right_idxs = self._split_node(X[:, best_feat_idx], best_thresh)
 
         left = self._build_tree(X[left_idxs, :], y[left_idxs], depth + 1)

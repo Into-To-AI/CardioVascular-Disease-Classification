@@ -17,6 +17,7 @@ class AdaBoost:
         self.weak_learner_weights = []
 
         for i in range(self.number_of_learners):
+            print(f"Training learner {i+1}/{self.number_of_learners}")
             # Create new stump for each iteration
             h_t = Stump()
             h_t.fit(x_train, y, self.weights)
@@ -26,13 +27,13 @@ class AdaBoost:
             predictions = h_t.predict(x_train)
             incorrect = predictions != y
             error = np.sum(self.weights[incorrect]) / np.sum(self.weights)
-
-            # Handle edge cases
-            error = np.clip(error, 1e-15, 1 - 1e-15)
             
+            print(f"Error in learner {i+1} is: {error}")
             # Calculate learner weight
             alpha_t = 0.5 * np.log((1 - error) / error)
             self.weak_learner_weights.append(alpha_t)
+
+            print(f"Weight of learner {i+1} is: {alpha_t}")
 
             # Update sample weights
             self.weights *= np.exp(-alpha_t * y * predictions)

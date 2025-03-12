@@ -28,7 +28,7 @@ class DecisionTree:
             val = self._majority(y)
             return Node(value=val)
 
-        feat_idxs = np.random.choice(n_feat, self.n_feats, replace=False)
+        feat_idxs = np.random.choice(n_feat, self.n_feats, replace=False,random_state=42)
 
         best_thresh, best_feat_idx = self._best_split(X, y, feat_idxs)
         

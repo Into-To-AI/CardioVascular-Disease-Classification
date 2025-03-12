@@ -73,7 +73,7 @@ class Stump:
         misclassified = y != majority_class
         return np.sum(weights[misclassified]) / np.sum(weights)
     
-    def predict(self, X):
+        def predict(self, X):
         return np.array([self._traverse(x, self.root) for x in X])
 
     def _traverse(self, x, node):

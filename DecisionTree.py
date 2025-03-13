@@ -1,8 +1,9 @@
 import numpy as np
 from collections import Counter
-import Node
+from Node import Node
 
 class DecisionTree:
+    # n_feats is the number of features to consider when looking for the best split
     def __init__(self, min_sample_split=10, max_depth=5, n_feats=None):
         self.min_sample_split = min_sample_split
         self.max_depth = max_depth
@@ -10,7 +11,14 @@ class DecisionTree:
         self.root = None
 
     def fit(self, X, y):
-        self.n_feats = X.shape[1] if not self.n_feats else min(X.shape[1], self.n_feats)
+        n_features = X.shape[1]
+    
+        # Calculate lower bound (half the features)
+        lower_bound= n_features // 2
+        rng = np.random.RandomState(42)
+        # Randomly choose the number of features to select, between lower_bound and n_features.
+        self.n_feats = rng.randint(lower_bound, n_features + 1)
+        self.n_feats = X.shape[1] if self.n_feats is None else min(X.shape[1], self.n_feats)
         self.root = self._build_tree(X, y)
 
     def _build_tree(self, X, y, depth=0):
@@ -21,9 +29,10 @@ class DecisionTree:
             val = self._majority(y)
             return Node(value=val)
 
-        feat_idxs = np.random.choice(n_feat, self.n_feats, replace=False,random_state=42)
+        rng = np.random.RandomState(42)
+        feature_idxs = rng.choice(n_feat, self.n_feats, replace=False)
 
-        best_thresh, best_feat_idx = self._best_split(X, y, feat_idxs)
+        best_thresh, best_feat_idx = self._best_split(X, y, feature_idxs)
         
         left_idxs, right_idxs = self._split_node(X[:, best_feat_idx], best_thresh)
 

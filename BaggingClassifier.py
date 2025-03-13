@@ -22,7 +22,7 @@ class BaggingClassifier:
     def _bootstrap_sample(self, X, y):
        
         n_samples = int(self.sample_size * len(X))
-        indices = np.random.choice(len(X), n_samples, replace=True)
+        indices = np.random.choice(len(X), n_samples, replace=True,random_state=42)
         return X[indices], y[indices]
 
     def fit(self, X, y):

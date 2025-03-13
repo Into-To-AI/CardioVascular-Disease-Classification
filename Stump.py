@@ -2,12 +2,14 @@ import numpy as np
 from collections import Counter
 from Node import Node
 
+
 class Stump:
     def __init__(self, min_sample_split=10, max_depth=1, n_feats=None):
         self.min_sample_split = min_sample_split
         self.max_depth = max_depth
         self.n_feats = n_feats
         self.root = None
+        
 
     def fit(self, X, y, weights):
         self.n_feats = X.shape[1] if self.n_feats is None else min(X.shape[1], self.n_feats)
@@ -22,8 +24,10 @@ class Stump:
             majority_class = self.majority(y)
             # print(f"Terminating at depth {depth} with {n_samples} samples and majority class {majority_class}")
             return Node(value=majority_class)
+                
+        rng = np.random.RandomState(42)
+        feature_idxs = rng.choice(n_features, self.n_feats, replace=False)
 
-        feature_idxs = np.random.choice(n_features, self.n_feats, replace=False,random_state=42)
         # print(f"feature_idxs: {feature_idxs}")
         best_thresh, best_feat_idx = self._best_split(X, y, weights, feature_idxs)
 

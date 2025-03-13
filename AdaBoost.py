@@ -17,27 +17,40 @@ class AdaBoost:
         self.weak_learner_weights = []
 
         for i in range(self.number_of_learners):
-            print(f"Training learner {i+1}/{self.number_of_learners}")
+
             # Create new stump for each iteration
             h_t = Stump()
             h_t.fit(x_train, y, self.weights)
-            self.weak_learners.append(h_t)
 
             # Calculate error
             predictions = h_t.predict(x_train)
             incorrect = predictions != y
             error = np.sum(self.weights[incorrect]) / np.sum(self.weights)
+
+
+            #perfect and worst case
+            if error == 0: #perfect stump
+                alpha_t = 1e9
+                self.weak_learners.append(h_t)
+                self.weak_learner_weights.append(alpha_t)
+                break
+            if error >= 0.5:
+                i = i - 1
+                continue
             
-            print(f"Error in learner {i+1} is: {error}")
             # Calculate learner weight
             alpha_t = 0.5 * np.log((1 - error) / error)
+
+            # Append Learner
+            self.weak_learners.append(h_t)
             self.weak_learner_weights.append(alpha_t)
 
-            print(f"Weight of learner {i+1} is: {alpha_t}")
 
             # Update sample weights
             self.weights *= np.exp(-alpha_t * y * predictions)
-            self.weights /= np.sum(self.weights)  # Normalize
+
+            # Normalize weights
+            self.weights /= np.sum(self.weights)  
     
     def predict(self, x_test):
         #initialize the predictions
@@ -49,9 +62,9 @@ class AdaBoost:
             
         # set the sign of the predictions
         predictions = np.sign(predictions)
-        # if the sign is -1, convert it to 0
-        predictions = np.where(predictions == -1, 0, predictions)
-    
+
+        # if the sign is -1, convert it to 0(mapping)
+        predictions = np.where(predictions == -1, 0, predictions)    
         return predictions
 
 

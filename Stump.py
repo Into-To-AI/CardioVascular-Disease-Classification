@@ -13,7 +13,6 @@ class Stump:
 
     def fit(self, X, y, weights):
         self.n_feats = X.shape[1] if self.n_feats is None else min(X.shape[1], self.n_feats)
-        # print(f"Using {self.n_feats} features for training")
         self.root = self._build_tree(X, y, weights)
 
     def _build_tree(self, X, y, weights, depth=0):
@@ -22,13 +21,11 @@ class Stump:
 
         if depth >= self.max_depth or n_samples < self.min_sample_split or n_labels == 1:
             majority_class = self.majority(y)
-            # print(f"Terminating at depth {depth} with {n_samples} samples and majority class {majority_class}")
             return Node(value=majority_class)
                 
         rng = np.random.RandomState(42)
         feature_idxs = rng.choice(n_features, self.n_feats, replace=False)
 
-        # print(f"feature_idxs: {feature_idxs}")
         best_thresh, best_feat_idx = self._best_split(X, y, weights, feature_idxs)
 
         left_idxs, right_idxs = self._split_node(X[:, best_feat_idx], best_thresh)
@@ -44,37 +41,21 @@ class Stump:
         return left, right
 
     def _best_split(self, X, y, weights, feat_idxs):
-        # print("checking best split")
         min_mcr = float('inf')
         best_feat = None
         best_thresh = None
 
         for feature in feat_idxs:
-            # print(f"Checking feature {feature}")
             X_col = X[:, feature]
             thresholds = np.unique(X_col)
 
             for thres in thresholds:
-                # print(f"Checking threshold {thres}")
-                # Create boolean masks for splitting the data:
-                # left_mask: True for values <= threshold
-                # right_mask: True for values > threshold
-                left_mask = X_col <= thres  # e.g., [True, False, True] for X_col=[1,4,2] and thres=3
-                right_mask = X_col > thres  # e.g., [False, True, False] for X_col=[1,4,2] and thres=3
-                # print(f"left_mask: {left_mask}")
-                # print(f"right_mask: {right_mask}")
-                # Example:
-                # If X_col = [1,4,2,5], thres = 3
-                # left_mask = [True,False,True,False]
-                # If y = [0,1,0,1]
-                # Then y[left_mask] = [0,0] (only values where left_mask is True)
-                # And weights[left_mask] = weights corresponding to those samples
+               
+                left_mask = X_col <= thres  
+                right_mask = X_col > thres  
                 
                 left_wmcr = self.weighted_misclassification_rate(y[left_mask], weights[left_mask])
-                right_wmcr = self.weighted_misclassification_rate(y[right_mask], weights[right_mask])
-
-                # print(f"left_wmcr: {left_wmcr}")
-                # print(f"right_wmcr: {right_wmcr}")
+                right_wmcr = self.weighted_misclassification_rate(y[right_mask], weights[right_mask])             
 
                 wmcr = left_wmcr + right_wmcr  # Total misclassification error
                 if wmcr < min_mcr:

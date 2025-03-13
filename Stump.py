@@ -23,7 +23,7 @@ class Stump:
             # print(f"Terminating at depth {depth} with {n_samples} samples and majority class {majority_class}")
             return Node(value=majority_class)
 
-        feature_idxs = np.random.choice(n_features, self.n_feats, replace=False)
+        feature_idxs = np.random.choice(n_features, self.n_feats, replace=False,random_state=42)
         # print(f"feature_idxs: {feature_idxs}")
         best_thresh, best_feat_idx = self._best_split(X, y, weights, feature_idxs)
 

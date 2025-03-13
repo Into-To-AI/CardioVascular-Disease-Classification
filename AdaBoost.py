@@ -46,9 +46,13 @@ class AdaBoost:
         #for each base learner, make a prediction and multiply it by the weight of the base learner
         for i, h_t in enumerate(self.weak_learners):
             predictions += self.weak_learner_weights[i] * h_t.predict(x_test)
-        
-        #return the sign of the predictions
-        return np.sign(predictions)
+            
+        # set the sign of the predictions
+        predictions = np.sign(predictions)
+        # if the sign is -1, convert it to 0
+        predictions = np.where(predictions == -1, 0, predictions)
+    
+        return predictions
 
 
 
